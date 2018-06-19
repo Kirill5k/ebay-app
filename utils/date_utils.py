@@ -9,5 +9,12 @@ class Date:
         self.time = self.time - timedelta(minutes=minutes)
         return self
 
+    def minus_days(self, days):
+        self.time = self.time - timedelta(days=days)
+        return self
+
+    def as_date(self):
+        return self.time
+
     def as_iso(self):
         return self.time.strftime('%Y-%m-%dT%H:%M:%S.000Z')

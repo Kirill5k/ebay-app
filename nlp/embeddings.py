@@ -5,11 +5,15 @@ from keras.layers import Embedding
 from gensim.models import Word2Vec
 from utils.text_utils import tokenize
 from utils.math_utils import create_oh_vector
-from utils.logging import log
+from utils.logging import log, log_error
 import numpy as np
 
 
 class WordEmbeddings:
+    EMPTY = 'EMP'
+    HYPHEN = '-'
+    UNKNOWN = 'unknown'
+
     def __init__(self, model):
         self.model = model
         self.size = len(model.wv.vocab) + 1
@@ -23,7 +27,7 @@ class WordEmbeddings:
         return WordEmbeddings(model)
 
     @staticmethod
-    def from_sentences(sentences, size=75, window=4, min_count=1):
+    def from_sentences(sentences, size=15, window=4, min_count=1):
         log('creating new WordEmbeddings from text')
         processes_sentences = tokenize(sentences)
         model = Word2Vec(processes_sentences, size=size, window=window, min_count=min_count)
@@ -31,11 +35,11 @@ class WordEmbeddings:
 
     def sentences_to_indices(self, sentences):
         processes_sentences = tokenize(sentences)
-        return np.array([[self.get_index(word) for word in sentence] for sentence in processes_sentences])
+        return list(map(lambda sentence: [self.get_index(word) for word in sentence], processes_sentences))
 
     def sentences_to_oh(self, sentences):
         processes_sentences = tokenize(sentences)
-        return np.array([[self.get_oh(word) for word in sentence] for sentence in processes_sentences])
+        return list(map(lambda sentence: [self.get_oh(word) for word in sentence], processes_sentences))
 
     def info(self):
         log(f'number of word vectors: {self.size}')
@@ -56,7 +60,11 @@ class WordEmbeddings:
         return self.model.wv.get_keras_embedding()
 
     def get_index(self, word):
-        return self.model.wv.vocab[word].index
+        try:
+            return self.model.wv.vocab[word].index
+        except Exception as error:
+            log_error(f'unknown word {word}')
+            return self.model.wv.vocab[WordEmbeddings.HYPHEN].index
 
     def get_word(self, index):
         assert index < self.size, 'index is greater than vocab size'

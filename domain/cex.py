@@ -1,6 +1,7 @@
 from mongoengine import *
 from datetime import datetime
 from config import Config
+from domain.phone import PhoneDetails
 
 
 connect(db=Config.mongo['db'], username=Config.mongo['username'], password=Config.mongo['password'], host=Config.mongo['host'])
@@ -18,7 +19,9 @@ class Query(EmbeddedDocument):
 
 
 class CexPhone(Document):
-    name = StringField()
+    name = StringField(unique=True)
+    condition = StringField()
+    details = EmbeddedDocumentField(PhoneDetails)
     query = EmbeddedDocumentField(Query)
     price = EmbeddedDocumentField(Price)
     meta = {'collection': 'cex-listings'}

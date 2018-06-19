@@ -3,19 +3,22 @@ from nlp.Seq2SeqPredictor import Seq2SeqPredictor
 from nlp.embeddings import WordEmbeddings
 from config import Config
 from utils.logging import log, log_error
-from domain.ebay import EbayPhone, PhoneDetails
+from domain.ebay import EbayPhone
+from domain.phone import PhoneDetails
+from typing import List
 
 
 class EbayService:
-    ebay_client = EbayClient()
+    client = EbayClient()
     predictor = Seq2SeqPredictor.from_file(Config.get_filepath('predictor-model'), Config.get_filepath('predictor-weights'))
     embeddings = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
 
     @classmethod
-    def get_latest_phones(cls):
-        phones = cls.ebay_client.get_latest_phones()
+    def get_latest_phones(cls) -> List[EbayPhone]:
+        phones = cls.client.get_latest_phones()
         for phone in phones:
             cls.__update_details(phone)
+            cls.__save(phone)
         return phones
 
     @classmethod
@@ -23,9 +26,9 @@ class EbayService:
         try:
             details = cls.__get_details(phone.title)
             phone.details = details
-            log(f'{phone.title} / {details}')
         except Exception as error:
-            log_error(f'Error processing phone "{phone.title}": {error}')
+            log_error(f'error processing phone "{phone.title}": {error}')
+            phone.details = PhoneDetails()
 
     @classmethod
     def __get_details(cls, ebay_title: str) -> PhoneDetails:
@@ -34,5 +37,12 @@ class EbayService:
         prediction = cls.embeddings.ohs_to_sentence(prediction_ohs)
         prediction = prediction.replace(' EMP', '')
         details = prediction.split(' - ')
-        assert len(details) == 6, f'Unexpected prediction outcome: {prediction}'
-        return PhoneDetails(brand=details[0], model=details[1], year=details[2], memory=details[3], color=details[4],network=details[5])
+        assert len(details) == 5, f'unexpected prediction outcome for {ebay_title}: {prediction}'
+        return PhoneDetails(brand=details[0], model=details[1], memory=details[3], color=details[4], network=details[5])
+
+    @classmethod
+    def __save(cls, phone):
+        try:
+            phone.save()
+        except Exception as error:
+            log_error(f'unable to save phone: {error}')

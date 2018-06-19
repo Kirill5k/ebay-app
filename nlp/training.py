@@ -29,7 +29,6 @@ class DataSet:
         y_oh = self.embeddings.sentences_to_oh(self.y_raw)
         y_oh = [pad_sequences(y_oh_part, maxlen=self.y_max_len, padding='post', value=self.embeddings.get_oh('EMP')) for y_oh_part in np.array_split(y_oh,5)]
         self.y_oh = np.concatenate(y_oh)
-        # self.y_oh = pad_sequences(y_oh, maxlen=self.y_max_len, padding='post', value=self.embeddings.get_oh('EMP'))
 
     def get_all(self):
         return self.X_indexed, self.y_oh

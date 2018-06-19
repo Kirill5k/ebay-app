@@ -1,9 +1,11 @@
-from domain.ebay import EbayPhone, PhoneDetails
+from domain.ebay import EbayPhone
+from domain.phone import PhoneDetails
 import pandas as pd
 import numpy as np
 from utils.text_utils import match_word, tokenize, update_vocabulary
 from utils.logging import log
 from nlp.embeddings import WordEmbeddings
+from nlp.training import DataSet
 from config import Config
 
 
@@ -81,24 +83,28 @@ def create_data_set():
     phones_df.to_csv(Config.get_filepath('train-data'), index=False)
 
 
-clean_phones()
-set_manufacturer()
-set_operator()
-set_color()
-set_model()
-set_memory()
-set_year()
-create_data_set()
-create_embeddings()
+def print_unknown_models():
+    models = ['htc', 'motorola', 'samsung', 'apple', 'nokia', 'huawei', 'honor', 'microsoft', 'oneplus', 'meizu', 'google', 'lg']
+    for model in models:
+        for phone in EbayPhone.objects(details__brand=model, details__model='unknown'):
+            print(phone.title)
+
+
+# clean_phones()
+# set_manufacturer()
+# set_operator()
+# set_color()
+# set_model()
+# set_memory()
+# set_year()
+# create_data_set()
+# create_embeddings()
+# print_unknown_models()
 
 # titles = pd.read_csv('data/mobile-phone-titles.csv')['title'].tolist()
 # titles = ['EMP ' +title + ' EMP' for title in titles]
-# emb = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
+emb = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
 # emb = WordEmbeddings.from_sentences(titles)
 # emb.info()
 # vocab = update_vocabulary(tokenize(titles))
-
-# set = DataSet(y_labels=['brand', 'color', 'network'])
-
-for phone in EbayPhone.objects(details__brand='sony', details__model='unknown'):
-    print(phone.title)
+dataset = DataSet(emb, Config.get_filepath('train-data'), y_labels=['brand', 'model', 'memory', 'color', 'network'])
