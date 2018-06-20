@@ -37,8 +37,8 @@ class EbayService:
         prediction = cls.embeddings.ohs_to_sentence(prediction_ohs)
         prediction = prediction.replace(' EMP', '')
         details = prediction.split(' - ')
-        assert len(details) == 5, f'unexpected prediction outcome for {ebay_title}: {prediction}'
-        return PhoneDetails(brand=details[0], model=details[1], memory=details[3], color=details[4], network=details[5])
+        assert len(details) == 6, f'unexpected prediction outcome for {ebay_title}: {prediction}'
+        return PhoneDetails(brand=details[0], model=details[1], memory=details[2], color=details[3], network=details[4], year=details[5])
 
     @classmethod
     def __save(cls, phone):

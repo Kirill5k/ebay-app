@@ -16,7 +16,7 @@ X_train, X_test, y_train, y_test = dataset.get_train_test_data(test_size=0.1)
 predictor = Seq2SeqPredictor.from_file(Config.get_filepath('predictor-model'), Config.get_filepath('predictor-weights'))
 # predictor = Seq2SeqPredictor.new(embeddings, (y_max_len, vocab_size))
 predictor.summary()
-predictor.train(X_train, y_train, epochs=15)
+predictor.train(X_train, y_train, epochs=50)
 predictor.save(Config.get_filepath('predictor-model'), Config.get_filepath('predictor-weights'))
 predictor.test(X_test, y_test)
 

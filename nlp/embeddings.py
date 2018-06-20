@@ -35,11 +35,11 @@ class WordEmbeddings:
 
     def sentences_to_indices(self, sentences):
         processes_sentences = tokenize(sentences)
-        return list(map(lambda sentence: [self.get_index(word) for word in sentence], processes_sentences))
+        return np.array([[self.get_index(word) for word in sentence] for sentence in processes_sentences])
 
     def sentences_to_oh(self, sentences):
         processes_sentences = tokenize(sentences)
-        return list(map(lambda sentence: [self.get_oh(word) for word in sentence], processes_sentences))
+        return np.array([[self.get_oh(word) for word in sentence] for sentence in processes_sentences])
 
     def info(self):
         log(f'number of word vectors: {self.size}')

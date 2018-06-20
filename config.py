@@ -10,6 +10,7 @@ class Config:
     config.read(os.path.join(PROJECT_ROOT, 'config.ini'))
     mongo = config['mongo']
     ebay = config['ebay']
+    webhooks = config['webhooks']
 
     @classmethod
     def get_filepath(cls, file):

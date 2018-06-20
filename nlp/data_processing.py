@@ -103,8 +103,8 @@ def print_unknown_models():
 
 # titles = pd.read_csv('data/mobile-phone-titles.csv')['title'].tolist()
 # titles = ['EMP ' +title + ' EMP' for title in titles]
-emb = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
+# emb = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
 # emb = WordEmbeddings.from_sentences(titles)
 # emb.info()
 # vocab = update_vocabulary(tokenize(titles))
-dataset = DataSet(emb, Config.get_filepath('train-data'), y_labels=['brand', 'model', 'memory', 'color', 'network'])
+# dataset = DataSet(emb, Config.get_filepath('train-data'), y_labels=['brand', 'model', 'memory', 'color', 'network'])
