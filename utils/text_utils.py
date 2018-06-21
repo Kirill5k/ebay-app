@@ -13,7 +13,7 @@ def match_word(word):
 
 
 def tokenize(sentences):
-    regex = re.compile(r'^[^a-zA-Z0-9\\-]{1}$')
+    regex = re.compile(r'^[^a-zA-Z0-9]{1}$')
     is_valid_word = lambda word: not regex.match(word)
     return np.array([list(filter(is_valid_word, word_tokenize(sentence))) for sentence in sentences])
 

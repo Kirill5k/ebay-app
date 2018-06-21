@@ -20,8 +20,9 @@ class PhoneService:
 
     @classmethod
     def check_price(cls, ebay_phone: EbayPhone):
-        cex_phones = cls.cex_service.find_match(ebay_phone.details)
+        cex_phones = cls.cex_service.find_match(ebay_phone.formatted_title)
         if len(cex_phones) > 0:
             cex_price = average_cash_price(cex_phones)
             if cex_price >= ebay_phone.price:
                 cls.notification_service.send_notification(ebay_phone, cex_price)
+                pass

@@ -11,7 +11,6 @@ import numpy as np
 
 class WordEmbeddings:
     EMPTY = 'EMP'
-    HYPHEN = '-'
     UNKNOWN = 'unknown'
 
     def __init__(self, model):
@@ -27,7 +26,7 @@ class WordEmbeddings:
         return WordEmbeddings(model)
 
     @staticmethod
-    def from_sentences(sentences, size=15, window=4, min_count=1):
+    def from_sentences(sentences, size=25, window=5, min_count=1):
         log('creating new WordEmbeddings from text')
         processes_sentences = tokenize(sentences)
         model = Word2Vec(processes_sentences, size=size, window=window, min_count=min_count)
@@ -64,7 +63,7 @@ class WordEmbeddings:
             return self.model.wv.vocab[word].index
         except Exception as error:
             log_error(f'unknown word {word}')
-            return self.model.wv.vocab[WordEmbeddings.HYPHEN].index
+            return self.model.wv.vocab[WordEmbeddings.UNKNOWN].index
 
     def get_word(self, index):
         assert index < self.size, 'index is greater than vocab size'

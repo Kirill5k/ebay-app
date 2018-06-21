@@ -1,14 +1,16 @@
 from mongoengine import EmbeddedDocument, StringField
+from nlp.embeddings import WordEmbeddings
 
 
 class PhoneDetails(EmbeddedDocument):
-    brand = StringField(default='unknown')
-    model = StringField(default='unknown')
-    memory = StringField(default='unknown')
-    network = StringField(default='unknown')
-    color = StringField(default='unknown')
-    year = StringField(default='unknown')
+    brand = StringField(default=WordEmbeddings.UNKNOWN)
+    model = StringField(default=WordEmbeddings.UNKNOWN)
+    memory = StringField(default=WordEmbeddings.UNKNOWN)
+    network = StringField(default=WordEmbeddings.UNKNOWN)
+    color = StringField(default=WordEmbeddings.UNKNOWN)
+    year = StringField(default=WordEmbeddings.UNKNOWN)
 
     def __str__(self):
-        summary = f'{self.brand} {self.model} {self.memory} {self.year} {self.color} {self.network}'
-        return summary.replace(' unknown', '').strip()
+        summary = [self.brand, self.model, self.memory, self.year, self.color, self.network]
+        summary = ' '.join([item for item in summary if item is not WordEmbeddings.UNKNOWN]).strip()
+        return summary if len(summary) > 0 else WordEmbeddings.UNKNOWN

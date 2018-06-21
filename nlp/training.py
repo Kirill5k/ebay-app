@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from nlp.embeddings import WordEmbeddings
 from sklearn.model_selection import train_test_split
 from utils.text_utils import max_len
 from keras.preprocessing.sequence import pad_sequences
@@ -7,7 +8,7 @@ from utils.logging import log
 
 
 class DataSet:
-    def __init__(self, embeddings, data_file, x_label='title', y_labels=['brand']):
+    def __init__(self, embeddings: WordEmbeddings, data_file, x_label='title', y_labels=['brand']):
         self.data = pd.read_csv(data_file)
         self.embeddings = embeddings
         self.vocab_size = self.embeddings.size
@@ -24,7 +25,7 @@ class DataSet:
 
     def __prepare_y(self, y_labels):
         log('preparing y')
-        self.y_raw = [' - '.join([row[label] for label in y_labels]) for index, row in self.data.iterrows()]
+        self.y_raw = [' '.join([row[label] for label in y_labels if row[label] is not 'unknown']) for index, row in self.data.iterrows()]
         self.y_max_len = max_len(self.y_raw)
         y_oh = self.embeddings.sentences_to_oh(self.y_raw)
         y_oh = [pad_sequences(y_oh_part, maxlen=self.y_max_len, padding='post', value=self.embeddings.get_oh('EMP')) for y_oh_part in np.array_split(y_oh,5)]

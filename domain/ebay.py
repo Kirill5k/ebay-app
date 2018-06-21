@@ -16,6 +16,7 @@ class Seller(EmbeddedDocument):
 class EbayPhone(Document):
     id = StringField(required=True, primary_key=True)
     title = StringField()
+    formatted_title = StringField()
     price = FloatField()
     images = ListField(URLField())
     details = EmbeddedDocumentField(PhoneDetails)
