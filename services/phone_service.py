@@ -7,6 +7,8 @@ from domain.ebay import EbayPhone
 
 
 class PhoneService:
+    PRICE_THRESHOLD = 0.9
+
     ebay_service = EbayService()
     cex_service = CexService()
     notification_service = NotificationService()
@@ -21,8 +23,7 @@ class PhoneService:
     @classmethod
     def check_price(cls, ebay_phone: EbayPhone):
         cex_phones = cls.cex_service.find_match(ebay_phone.formatted_title)
-        if len(cex_phones) > 0:
-            cex_price = average_cash_price(cex_phones)
-            if cex_price >= ebay_phone.price:
-                cls.notification_service.send_notification(ebay_phone, cex_price)
-                pass
+        cex_price = average_cash_price(cex_phones)
+        if cex_price * cls.PRICE_THRESHOLD >= ebay_phone.price:
+            cls.notification_service.send_notification(ebay_phone, cex_price)
+

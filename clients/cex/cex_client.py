@@ -12,7 +12,8 @@ class CexClient:
         response = result.json().get('response', {'akc': 'Failure'})
         assert response['ack'] == 'Success', 'Failed to make get request to CEX'
         data = response.get('data')
-        return data.get('results', []) if data is not None else []
+        results = data.get('results', []) if data is not None else []
+        return results if results is not None else []
 
     def find_phone(self, query):
         results = self.__search(query)

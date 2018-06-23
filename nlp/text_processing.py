@@ -21,8 +21,8 @@ predictor.save(Config.get_filepath('predictor-model'), Config.get_filepath('pred
 predictor.test(X_test, y_test)
 
 
-test = X_test[0:500]
-expected = y_test[0:500]
+test = X_test[500:1500]
+expected = y_test[500:1500]
 results = predictor.predict(test)
 
 for (inp, exp, res) in zip(test, expected, results):
