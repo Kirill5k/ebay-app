@@ -3,16 +3,32 @@ from domain.cex import CexPhone
 from clients.cex.cex_client import CexClient
 from typing import List
 from utils.date_utils import Date
+from utils.logging import Logger
 
 
 class CexService:
+    logger = Logger.of('CexService')
     client = CexClient()
 
     @classmethod
-    def find_match(cls, details: PhoneDetails) -> List[CexPhone]:
-        query = str(details)
-        if 'unknown' not in query:
-            phones = CexPhone.objects(query__string=query, query__date__gte=Date().minus_days(7).as_date()).all()
-            return phones if len(phones) > 0 else cls.client.find_phone(query)
-        else:
-            return []
+    def find_match(cls, query: str) -> List[CexPhone]:
+        phones = cls.__query_db(query)
+        return phones if len(phones) > 0 else cls.__query_client(query)
+
+    @classmethod
+    def __query_db(cls, query):
+        return CexPhone.objects(query__string=query, query__date__gte=Date().minus_days(7).as_date()).all()
+
+    @classmethod
+    def __query_client(cls, query):
+        phones = cls.client.find_phone(query)
+        for phone in phones:
+            cls.__save(phone)
+        return phones
+
+    @classmethod
+    def __save(cls, phone):
+        try:
+            phone.save()
+        except Exception as error:
+            cls.logger.error(f'unable to save: {error}')

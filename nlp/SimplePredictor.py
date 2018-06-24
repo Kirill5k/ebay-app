@@ -1,4 +1,4 @@
-from utils.logging import log
+from utils.logging import Logger
 from keras.models import Model
 from keras.layers import Dense, Input, Dropout, LSTM, Activation
 from keras.layers.embeddings import Embedding
@@ -7,6 +7,8 @@ from keras.initializers import glorot_uniform
 
 
 class ModelPredictor:
+    logger = Logger.of('ModelPredictor')
+
     def __init__(self, w2v_model, input_shape=(30,), output_size=4367):
         embeddings_layer = self.__embeddings_layer(w2v_model)
         self.model = self.__build_model(input_shape, embeddings_layer, output_size)
@@ -43,6 +45,6 @@ class ModelPredictor:
 
     def test(self, X_test, y_test):
         loss, acc = self.model.evaluate(X_test, y_test)
-        log()
-        log(f'Test loss = {loss}')
-        log(f'Test accuracy = {acc}')
+        self.logger.info()
+        self.logger.info(f'Test loss = {loss}')
+        self.logger.info(f'Test accuracy = {acc}')

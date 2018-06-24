@@ -8,9 +8,9 @@ connect(db=Config.mongo['db'], username=Config.mongo['username'], password=Confi
 
 
 class Price(EmbeddedDocument):
-    sell = StringField()
-    cash = StringField()
-    exchange = StringField()
+    sell = FloatField()
+    cash = FloatField()
+    exchange = FloatField()
 
 
 class Query(EmbeddedDocument):
@@ -19,7 +19,7 @@ class Query(EmbeddedDocument):
 
 
 class CexPhone(Document):
-    name = StringField(unique=True)
+    name = StringField()
     condition = StringField()
     details = EmbeddedDocumentField(PhoneDetails)
     query = EmbeddedDocumentField(Query)

@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 from utils.date_utils import Date
 from clients.ebay.domain.token import AccessToken
 from clients.ebay.mapper.phone_mapper import EbayPhoneMapper
-from utils.logging import log
+from utils.logging import Logger
 from utils.http_utils import retry
 from config import Config
 
@@ -12,6 +12,7 @@ class EbayClient:
     client_id: str
     client_secret: str
     access_token: AccessToken = None
+    logger = Logger.of('EbayClient')
 
     def __init__(self):
         self.client_id = Config.ebay['client_id']
@@ -28,7 +29,7 @@ class EbayClient:
 
     def __update_token(self) -> None:
         if self.access_token is None or self.access_token.is_expired():
-            log('updating token')
+            self.logger.info('updating token')
             token = self.__get_access_token()
             self.access_token = AccessToken(token)
 

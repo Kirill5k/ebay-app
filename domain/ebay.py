@@ -19,10 +19,14 @@ class EbayPhone(Document):
     formatted_title = StringField()
     price = FloatField()
     images = ListField(URLField())
-    details = EmbeddedDocumentField(PhoneDetails)
+    details = EmbeddedDocumentField(PhoneDetails, default=PhoneDetails())
     seller = EmbeddedDocumentField(Seller)
     condition = StringField()
     url = URLField(unique=True)
     date_posted = DateTimeField(default=datetime.utcnow)
     network = StringField()
     meta = {'collection': 'ebay-listings'}
+
+    @property
+    def is_recognized(self):
+        return self.formatted_title is not None and len(self.formatted_title) > 0

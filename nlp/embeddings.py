@@ -5,11 +5,12 @@ from keras.layers import Embedding
 from gensim.models import Word2Vec
 from utils.text_utils import tokenize
 from utils.math_utils import create_oh_vector
-from utils.logging import log, log_error
+from utils.logging import Logger
 import numpy as np
 
 
 class WordEmbeddings:
+    logger = Logger.of('WordEmbeddings')
     EMPTY = 'EMP'
     UNKNOWN = 'unknown'
 
@@ -17,17 +18,17 @@ class WordEmbeddings:
         self.model = model
         self.size = len(model.wv.vocab) + 1
         self.oh_dict = {}
-        log('WordEmbeddings created')
+        self.logger.info('WordEmbeddings created')
 
-    @staticmethod
-    def from_file(filename):
-        log(f'loading WordEmbeddings from file {filename}')
+    @classmethod
+    def from_file(cls, filename):
+        cls.logger.info(f'loading WordEmbeddings from file {filename}')
         model = Word2Vec.load(filename)
         return WordEmbeddings(model)
 
-    @staticmethod
-    def from_sentences(sentences, size=25, window=5, min_count=1):
-        log('creating new WordEmbeddings from text')
+    @classmethod
+    def from_sentences(cls, sentences, size=25, window=5, min_count=1):
+        cls.logger.info('creating new WordEmbeddings from text')
         processes_sentences = tokenize(sentences)
         model = Word2Vec(processes_sentences, size=size, window=window, min_count=min_count)
         return WordEmbeddings(model)
@@ -41,10 +42,10 @@ class WordEmbeddings:
         return np.array([[self.get_oh(word) for word in sentence] for sentence in processes_sentences])
 
     def info(self):
-        log(f'number of word vectors: {self.size}')
+        self.logger.info(f'number of word vectors: {self.size}')
 
     def save(self, filename):
-        log(f'saving word embeddings to {filename}')
+        self.logger.info(f'saving word embeddings to {filename}')
         self.model.init_sims(replace=True)
         self.model.save(filename)
 
@@ -62,7 +63,7 @@ class WordEmbeddings:
         try:
             return self.model.wv.vocab[word].index
         except Exception as error:
-            log_error(f'unknown word {word}')
+            self.logger.error(f'unknown word {word}')
             return self.model.wv.vocab[WordEmbeddings.UNKNOWN].index
 
     def get_word(self, index):

@@ -2,12 +2,13 @@ from clients.ebay.ebay_client import EbayClient
 from nlp.Seq2SeqPredictor import Seq2SeqPredictor
 from nlp.embeddings import WordEmbeddings
 from config import Config
-from utils.logging import log_error
+from utils.logging import Logger
 from domain.ebay import EbayPhone
 from typing import List
 
 
 class EbayService:
+    logger = Logger.of('EbayService')
     client = EbayClient()
     predictor = Seq2SeqPredictor.from_file(Config.get_filepath('predictor-model'), Config.get_filepath('predictor-weights'))
     embeddings = WordEmbeddings.from_file(Config.get_filepath('word2vec'))
@@ -25,7 +26,7 @@ class EbayService:
         try:
             return cls.__format_title(phone.title)
         except Exception as error:
-            log_error(f'error processing phone "{phone.title}": {error}')
+            cls.logger.error(f'error processing phone "{phone.title}": {error}')
             return WordEmbeddings.UNKNOWN
 
     @classmethod
@@ -33,11 +34,11 @@ class EbayService:
         indexes = cls.embeddings.sentences_to_indices([ebay_title])
         prediction_ohs = cls.predictor.predict(indexes)[0]
         prediction = cls.embeddings.ohs_to_sentence(prediction_ohs)
-        return prediction.replace(WordEmbeddings.UNKNOWN, '').strip()
+        return prediction.replace(WordEmbeddings.UNKNOWN, '').replace(WordEmbeddings.EMPTY, '').strip()
 
     @classmethod
     def __save(cls, phone):
         try:
             phone.save()
         except Exception as error:
-            log_error(f'unable to save phone: {error}')
+            cls.logger.error(f'unable to save: {error}')

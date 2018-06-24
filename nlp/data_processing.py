@@ -3,11 +3,13 @@ from domain.phone import PhoneDetails
 import pandas as pd
 import numpy as np
 from utils.text_utils import match_word, tokenize, update_vocabulary
-from utils.logging import log
+from utils.logging import Logger
 from nlp.embeddings import WordEmbeddings
 from nlp.training import DataSet
 from config import Config
 
+
+logger = Logger.of('DataPreparation')
 
 def create_embeddings():
     titles = pd.read_csv(Config.get_filepath('train-data'))['title'].tolist()
@@ -17,7 +19,7 @@ def create_embeddings():
 
 
 def clean_phones():
-    log('cleaning phones')
+    logger.info('cleaning phones')
     EbayPhone.objects().update(details=PhoneDetails())
     for phone in EbayPhone.objects(title__contains='*'):
         phone.update(title=phone.title.replace('*', ' '))
@@ -28,7 +30,7 @@ def clean_phones():
 
 
 def set_manufacturer():
-    log('setting manufacturer')
+    logger.info('setting manufacturer')
     brands = pd.read_csv(Config.get_filepath('brands'))
     for index, row in brands.iterrows():
         spelling, brand = row['spelling'], row['brand']
@@ -36,7 +38,7 @@ def set_manufacturer():
 
 
 def set_model():
-    log('setting model')
+    logger.info('setting model')
     models = pd.read_csv(Config.get_filepath('models'))
     for index, row in models.iterrows():
         brand, spelling, model = row['brand'], row['spelling'], row['model']
@@ -44,7 +46,7 @@ def set_model():
 
 
 def set_operator():
-    log('setting operator')
+    logger.info('setting operator')
     operators = pd.read_csv(Config.get_filepath('operators'))
     for index, row in operators.iterrows():
         brand, network = row['brand'], row['network']
@@ -52,7 +54,7 @@ def set_operator():
 
 
 def set_color():
-    log('setting color')
+    logger.info('setting color')
     colors = pd.read_csv(Config.get_filepath('colors'))
     for index, row in colors.iterrows():
         spelling, color = row['spelling'], row['color']
@@ -60,7 +62,7 @@ def set_color():
 
 
 def set_memory():
-    log('setting memory')
+    logger.info('setting memory')
     memory_sizes = pd.read_csv(Config.get_filepath('memory'))
     for index, row in memory_sizes.iterrows():
         spelling, size = row['spelling'], row['size']
@@ -68,7 +70,7 @@ def set_memory():
 
 
 def set_year():
-    log('setting year')
+    logger.info('setting year')
     years = pd.read_csv(Config.get_filepath('years'))
     for index, row in years.iterrows():
         spelling, year = row['spelling'], row['year']
@@ -76,10 +78,14 @@ def set_year():
 
 
 def create_data_set():
-    log('creating train data')
-    phones = [[phone.title, phone.details.brand, phone.details.model, phone.details.color, phone.details.memory, phone.details.year, phone.details.network] for phone in EbayPhone.objects()]
-    phones_array = np.array(phones)
-    phones_df = pd.DataFrame(phones_array, columns=['title', 'brand', 'model', 'color', 'memory', 'year', 'network'])
+    logger.info('creating train data')
+
+    def create_data_row(phone):
+        details = phone.details if phone.details is not None else PhoneDetails()
+        return [phone.title, details.brand, details.model, details.color, details.memory, details.year, details.network]
+
+    phones = np.array([create_data_row(phone) for phone in EbayPhone.objects()])
+    phones_df = pd.DataFrame(phones, columns=['title', 'brand', 'model', 'color', 'memory', 'year', 'network'])
     phones_df.to_csv(Config.get_filepath('train-data'), index=False)
 
 
@@ -90,7 +96,7 @@ def print_unknown_models():
             print(phone.title)
 
 
-clean_phones()
+# clean_phones()
 set_manufacturer()
 set_operator()
 set_color()
