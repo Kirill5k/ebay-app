@@ -50,14 +50,14 @@ class WordEmbeddings:
         self.model.save(filename)
 
     def keras_embeddings_layer(self):
-        # vocab_len = len(self.model.wv.vocab)
-        # emb_dim = self.model.wv.vector_size
-        # emb_matrix = self.model.wv.syn0
-        # embedding_layer = Embedding(vocab_len, emb_dim, trainable=False)
-        # embedding_layer.build((None,))
-        # embedding_layer.set_weights([emb_matrix])
-        # return embedding_layer
-        return self.model.wv.get_keras_embedding()
+        vocab_len = len(self.model.wv.vocab)
+        emb_dim = self.model.wv.vector_size
+        emb_matrix = self.model.wv.syn0
+        embedding_layer = Embedding(vocab_len, emb_dim, trainable=True)
+        embedding_layer.build((None,))
+        embedding_layer.set_weights([emb_matrix])
+        return embedding_layer
+        # return self.model.wv.get_keras_embedding()
 
     def get_index(self, word):
         try:

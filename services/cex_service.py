@@ -2,7 +2,8 @@ from domain.phone import PhoneDetails
 from domain.cex import CexPhone
 from clients.cex.cex_client import CexClient
 from typing import List
-from utils.date_utils import Date
+from utils.date import Date
+from utils.common import for_each
 from utils.logging import Logger
 
 
@@ -22,8 +23,7 @@ class CexService:
     @classmethod
     def __query_client(cls, query):
         phones = cls.client.find_phone(query)
-        for phone in phones:
-            cls.__save(phone)
+        for_each(cls.__save, phones)
         return phones
 
     @classmethod

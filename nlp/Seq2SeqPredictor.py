@@ -18,14 +18,14 @@ class Seq2SeqPredictor:
         model = Sequential()
         # model.add(Input(input_shape, dtype='int32'))
         model.add(word_embeddings.keras_embeddings_layer())
-        model.add(LSTM(256))
+        model.add(LSTM(512))
         model.add(Dropout(0.5))
         model.add(RepeatVector(output_shape[0]))
 
         model.add(LSTM(256, return_sequences=True))
         model.add(Dropout(0.5))
 
-        model.add(TimeDistributed(Dense(512)))
+        model.add(TimeDistributed(Dense(1024)))
         model.add(Dropout(0.3))
         model.add(TimeDistributed(Dense(output_shape[1])))
         model.add(Activation('softmax'))

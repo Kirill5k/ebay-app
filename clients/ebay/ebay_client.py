@@ -1,6 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from utils.date_utils import Date
+from utils.date import Date
 from clients.ebay.domain.token import AccessToken
 from clients.ebay.mapper.phone_mapper import EbayPhoneMapper
 from utils.logging import Logger
@@ -53,7 +53,7 @@ class EbayClient:
         result = requests.get(url=url, params=params, headers=headers)
         return result.json().get('itemSummaries', [])
 
-    def get_latest_phones(self, minutes=15) -> list:
+    def get_latest_phones(self, minutes=10) -> list:
         self.__update_token()
         phones = self.__search(query='phone', start_time=Date().minus_minutes(minutes).as_iso())
         return list(map(EbayPhoneMapper.map, phones))

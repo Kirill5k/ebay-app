@@ -1,4 +1,5 @@
 from nltk.tokenize import word_tokenize
+from utils.common import for_each
 from collections import Counter
 import numpy as np
 import re
@@ -19,6 +20,5 @@ def tokenize(sentences):
 
 
 def update_vocabulary(processed_text, vocabulary=Counter()):
-    for words in processed_text:
-        vocabulary.update(words)
+    for_each(vocabulary.update, processed_text)
     return vocabulary

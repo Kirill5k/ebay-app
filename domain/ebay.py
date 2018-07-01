@@ -30,3 +30,7 @@ class EbayPhone(Document):
     @property
     def is_recognized(self):
         return self.formatted_title is not None and len(self.formatted_title) > 0
+
+    @property
+    def has_trusted_seller(self):
+        return self.seller is not None and self.seller.feedback_score > 10

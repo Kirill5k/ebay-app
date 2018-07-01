@@ -9,8 +9,8 @@ class NotificationService:
 
     @classmethod
     def send_notification(cls, ebay_phone: EbayPhone, cex_price: str):
-        title = f'{ebay_phone.title}<br>{ebay_phone.formatted_title}<br>'
-        price = f'Ebay price: {ebay_phone.price} / Cex price: {cex_price}'
+        title = f'{ebay_phone.title}<br>--{ebay_phone.formatted_title}<br>'
+        price = f'<i>Ebay price: {ebay_phone.price} / Cex price: {cex_price}</i>'
         url = ebay_phone.url
         cls.logger.info('Sending event')
         cls.logger.info(f'|--> {title}')

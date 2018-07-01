@@ -36,7 +36,7 @@ class DataSet:
         self.y_raw = [create_label(row) for index, row in self.data.iterrows()]
         self.y_max_len = max_len(self.y_raw)
         y_oh = self.embeddings.sentences_to_oh(self.y_raw)
-        y_oh = [pad_sequences(y_oh_part, maxlen=self.y_max_len, padding='post', value=self.embeddings.get_oh('EMP')) for y_oh_part in np.array_split(y_oh,5)]
+        y_oh = [pad_sequences(y_oh_part, maxlen=self.y_max_len, padding='post', value=self.embeddings.get_oh('EMP')) for y_oh_part in np.array_split(y_oh,10)]
         self.y_oh = np.concatenate(y_oh)
 
     def get_all(self):
@@ -46,4 +46,4 @@ class DataSet:
         '''
         :return: X_train, X_test, y_train, y_test
         '''
-        return train_test_split(self.X_indexed, self.y_oh, test_size=test_size, random_state=44)
+        return train_test_split(self.X_indexed, self.y_oh, test_size=test_size, random_state=48)

@@ -9,7 +9,7 @@ from domain.ebay import EbayPhone
 class PhoneService:
     logger = Logger.of('PhoneService')
 
-    PRICE_THRESHOLD = 0.85
+    PRICE_THRESHOLD = 0.9
 
     ebay_service = EbayService()
     cex_service = CexService()
@@ -24,9 +24,9 @@ class PhoneService:
 
     @classmethod
     def check_price(cls, ebay_phone: EbayPhone):
-        cls.logger.info(f'{ebay_phone.title}')
+        cls.logger.info(f'{ebay_phone.title} (£{ebay_phone.price})')
         cls.logger.info(f' |--> {ebay_phone.formatted_title}')
-        if ebay_phone.is_recognized:
+        if ebay_phone.is_recognized and ebay_phone.has_trusted_seller:
             cex_phones = cls.cex_service.find_match(ebay_phone.formatted_title)
             cex_price = average_cash_price(cex_phones)
             if cex_price > 0 and cex_price * cls.PRICE_THRESHOLD >= ebay_phone.price:
